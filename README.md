@@ -3,6 +3,15 @@ docker-hrforecast
 
 Dockerfile of hrforecast.
 
+How to using?
+-------------
+
+```
+> vagrant up --provision
+> open http://192.168.33.100/
+```
+
+
 LICENSE
 -------
 
