@@ -36,19 +36,23 @@ RUN source /opt/perlbrew/etc/bashrc && perlbrew use perl-5.18.2 && perlbrew inst
 RUN git clone https://github.com/kazeburo/HRForecast.git /root/HRForecast
 RUN source /opt/perlbrew/etc/bashrc && cd /root/HRForecast && perlbrew use perl-5.18.2 && cpanm -n -lextlib --installdeps .
  
-# setup mysql
-RUN chkconfig --level 2345 mysqld on
-RUN service mysqld start && mysqladmin -h localhost -u root create hrforecast
-RUN service mysqld start && cd /root/HRForecast && mysql -h localhost -u root hrforecast < schema.sql
-RUN service mysqld start && mysql -u root -e "GRANT CREATE, ALTER, DELETE, INSERT, UPDATE, SELECT ON hrforecast.* TO 'hrforecast'@'localhost' IDENTIFIED BY 'hrforecast';"
+# setup mysqld
+ADD ./mysqld-setup.sh /root/mysqld-setup.sh
+RUN chmod +x /root/mysqld-setup.sh
+RUN /root/mysqld-setup.sh
+
+# update password of hrforecast.
 RUN cd /root/HRForecast && sed -i -e "s/username => ''/username => 'hrforecast'/g" config.pl
 RUN cd /root/HRForecast && sed -i -e "s/password => ''/password => 'hrforecast'/g" config.pl
 
-# nginx setup
+# setup configration of nginx.
 ADD ./template/nginx.conf /etc/nginx/conf.d/hrforecast.conf
 RUN rm /etc/nginx/conf.d/default.conf
 RUN rm /etc/nginx/conf.d/example_ssl.conf
 RUN service nginx restart
+
+# linked log directory
+RUN ln -s /var/log /tmp/log
  
 # startup
 ADD ./template/iptables-setting.sh /root/iptables-setting.sh
