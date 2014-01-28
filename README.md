@@ -11,6 +11,12 @@ How to using?
 > open http://192.168.33.100/
 ```
 
+Mount with host
+---------------
+
+```
+> docker run -p 80:80 -v /var/host/mysql:/var/lib/mysql -d ${CONTAINER_ID} 
+```
 
 LICENSE
 -------
