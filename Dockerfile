@@ -26,6 +26,9 @@ RUN yum -y install --enablerepo=epel,remi openssh-server openssh-client
  
 # install nginx
 RUN yum -y install --enablerepo=nginx nginx
+
+# install supervisord
+RUN yum -y install --enablerepo=epel,remi supervisor
  
 # setup perlbrew
 RUN export PERLBREW_ROOT=/opt/perlbrew && curl -L http://install.perlbrew.pl | bash
@@ -50,6 +53,12 @@ ADD ./template/nginx.conf /etc/nginx/conf.d/hrforecast.conf
 RUN rm /etc/nginx/conf.d/default.conf
 RUN rm /etc/nginx/conf.d/example_ssl.conf
 RUN service nginx restart
+
+# setup supervisor
+RUN sed -i -e "s/nodaemon=false/nodaemon=true/g" /etc/supervisord.conf
+ADD ./template/supervisord.conf /tmp/hrforecast.conf
+RUN cat /tmp/hrforecast.conf >> /etc/supervisord.conf
+RUN rm /tmp/hrforecast.conf
 
 # linked log directory
 RUN ln -s /var/log /tmp/log
