@@ -47,6 +47,7 @@ RUN /root/mysqld-setup.sh
 # update password of hrforecast.
 RUN cd /root/HRForecast && sed -i -e "s/username => ''/username => 'hrforecast'/g" config.pl
 RUN cd /root/HRForecast && sed -i -e "s/password => ''/password => 'hrforecast'/g" config.pl
+RUN cd /root/HRForecast && sed -i -e "s/front_proxy => \[\]/front_proxy => \['127.0.0.1'\]/g" config.pl
 
 # setup configration of nginx.
 ADD ./template/nginx.conf /etc/nginx/conf.d/hrforecast.conf
