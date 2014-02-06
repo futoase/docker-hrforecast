@@ -2,6 +2,7 @@
 
 /root/iptables-setting.sh
 
+service ntpd start
 service mysqld start
 service nginx start
 
