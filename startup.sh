@@ -4,6 +4,7 @@
 
 service mysqld start
 service nginx start
+service ntpd start
 
 if [ ! -d /var/lib/mysql/hrforecast ]; then
   /root/mysqld-setup.sh
