@@ -30,20 +30,22 @@ RUN yum -y install --enablerepo=epel,remi supervisor
 RUN export PERLBREW_ROOT=/opt/perlbrew && curl -L http://install.perlbrew.pl | bash
 RUN source /opt/perlbrew/etc/bashrc && perlbrew install perl-5.18.2
 RUN source /opt/perlbrew/etc/bashrc && perlbrew use perl-5.18.2 && perlbrew install-cpanm
+
+RUN useradd -m hrforecast
+RUN mkdir -p /home/hrforecast/scripts
  
 # install HRForecast
-RUN git clone https://github.com/kazeburo/HRForecast.git /root/HRForecast
-RUN source /opt/perlbrew/etc/bashrc && cd /root/HRForecast && perlbrew use perl-5.18.2 && cpanm -n -lextlib --installdeps .
+RUN git clone https://github.com/kazeburo/HRForecast.git /home/hrforecast/HRForecast
+RUN source /opt/perlbrew/etc/bashrc && cd /home/hrforecast/HRForecast && perlbrew use perl-5.18.2 && cpanm -n -lextlib --installdeps .
  
 # setup mysqld
-ADD ./mysqld-setup.sh /root/mysqld-setup.sh
-RUN chmod +x /root/mysqld-setup.sh
-RUN /root/mysqld-setup.sh
+ADD ./scripts/mysqld-setup.sh /home/hrforecast/scripts/mysqld-setup.sh
+RUN chmod +x /home/hrforecast/scripts/mysqld-setup.sh
+RUN /home/hrforecast/scripts/mysqld-setup.sh
 
-# update password of hrforecast.
-RUN cd /root/HRForecast && sed -i -e "s/username => ''/username => 'hrforecast'/g" config.pl
-RUN cd /root/HRForecast && sed -i -e "s/password => ''/password => 'hrforecast'/g" config.pl
-RUN cd /root/HRForecast && sed -i -e "s/front_proxy => \[\]/front_proxy => \['127.0.0.1'\]/g" config.pl
+ADD ./scripts/update-config.sh /home/hrforecast/scripts/update-config.sh
+RUN chmod +x /home/hrforecast/scripts/update-config.sh
+RUN /home/hrforecast/scripts/update-config.sh
 
 # setup configration of nginx.
 ADD ./template/nginx.conf /etc/nginx/conf.d/hrforecast.conf
@@ -61,11 +63,9 @@ RUN rm /tmp/hrforecast.conf
 RUN ln -s /var/log /tmp/log
  
 # startup
-ADD ./template/iptables-setting.sh /root/iptables-setting.sh
-RUN chmod +x /root/iptables-setting.sh
-ADD ./startup.sh /root/startup.sh
-RUN chmod +x /root/startup.sh
+ADD ./scripts/startup.sh /home/hrforecast/scripts/startup.sh
+RUN chmod +x /home/hrforecast/scripts/startup.sh
 ENV PATH /opt/perlbrew/perls/perl-5.18.2/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
  
 EXPOSE 80
-CMD ["/root/startup.sh"]
+CMD ["/home/hrforecast/scripts/startup.sh"]
