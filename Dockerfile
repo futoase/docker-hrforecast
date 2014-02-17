@@ -1,6 +1,10 @@
-FROM futoase/docker-centos-base:utc
+FROM centos
  
 MAINTAINER Keiji Matsuzaki <futoase@gmail.com>
+
+# setup network
+# reference from https://github.com/dotcloud/docker/issues/1240#issuecomment-21807183
+RUN echo "NETWORKING=yes" > /etc/sysconfig/network
  
 # setup remi repository
 RUN wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
@@ -61,8 +65,9 @@ RUN rm /tmp/hrforecast.conf
 
 # linked log directory
 RUN ln -s /var/log /tmp/log
- 
-# startup
+
+ADD ./scripts/timezone.sh /home/hrforecast/scripts/timezone.sh
+RUN chmod +x /home/hrforecast/scripts/timezone.sh
 ADD ./scripts/startup.sh /home/hrforecast/scripts/startup.sh
 RUN chmod +x /home/hrforecast/scripts/startup.sh
 ENV PATH /opt/perlbrew/perls/perl-5.18.2/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
