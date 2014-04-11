@@ -11,6 +11,9 @@ RUN wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.r
 RUN wget http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
 RUN curl -O http://rpms.famillecollet.com/RPM-GPG-KEY-remi; rpm --import RPM-GPG-KEY-remi
 RUN rpm -Uvh remi-release-6*.rpm epel-release-6*.rpm
+
+RUN yum -y update
+RUN yum -y upgrade
  
 # setup nginx repository
 ADD ./template/nginx.repo /etc/yum.repos.d/nginx.repo
