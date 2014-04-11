@@ -14,6 +14,9 @@ RUN rpm -Uvh remi-release-6*.rpm epel-release-6*.rpm
 
 RUN yum -y update
 RUN yum -y upgrade
+
+# installe sshd, passwd
+RUN yum -y install openssh-server passwd
  
 # setup nginx repository
 ADD ./template/nginx.repo /etc/yum.repos.d/nginx.repo
@@ -26,6 +29,8 @@ RUN yum -y install --enablerepo=epel,remi mysql mysql-server mysql-devel
  
 # install sshd
 RUN yum -y install --enablerepo=epel,remi openssh-server openssh-client
+# Change UsePAM yes to no
+RUN sed -i -e 's/UsePAM yes/UsePAM no/g' /etc/ssh/sshd_config
  
 # install nginx
 RUN yum -y install --enablerepo=nginx nginx
@@ -39,6 +44,7 @@ RUN source /opt/perlbrew/etc/bashrc && perlbrew install perl-5.18.2
 RUN source /opt/perlbrew/etc/bashrc && perlbrew use perl-5.18.2 && perlbrew install-cpanm
 
 RUN useradd -m hrforecast
+RUN echo "hrforecast" | passwd --stdin hrforecast
 RUN mkdir -p /home/hrforecast/scripts
  
 # install HRForecast
@@ -75,5 +81,5 @@ ADD ./scripts/startup.sh /home/hrforecast/scripts/startup.sh
 RUN chmod +x /home/hrforecast/scripts/startup.sh
 ENV PATH /opt/perlbrew/perls/perl-5.18.2/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
  
-EXPOSE 80
+EXPOSE 22 80
 CMD ["/home/hrforecast/scripts/startup.sh"]
