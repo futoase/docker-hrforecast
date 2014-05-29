@@ -7,6 +7,7 @@
         "scripts/vagrant.sh",
         "scripts/virtualbox.sh",
         "scripts/epel.sh",
+        "scripts/docker.sh",
         "scripts/cleanup.sh"
       ],
       "override": {
@@ -36,7 +37,7 @@
       "shutdown_command": "echo '/sbin/halt -h -p' > shutdown.sh; echo 'vagrant'|sudo -S sh 'shutdown.sh'",
       "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
       "virtualbox_version_file": ".vbox_version",
-      "vm_name": "CentOS6.5-x86_64-minimal",
+      "vm_name": "CentOS6.5-x86_64-minimal-docker",
       "vboxmanage": [
         [
           "modifyvm",
@@ -62,7 +63,7 @@
   "post-processors": [
     {
       "type": "vagrant",
-      "output": "./builds/CentOS-6.5-x86_64-mininal.box"
+      "output": "./builds/CentOS-6.5-x86_64-minimal-docker.box"
     }
   ]
 }
