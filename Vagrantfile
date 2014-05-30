@@ -4,7 +4,7 @@
 VAGRANTFILE_API_VERSION = "2"
 
 BOX_DIR = File.expand_path("~/.box")
-BOX_NAME = "CentOS-6.5-x86_64-mininal-docker"
+BOX_NAME = "CentOS-6.5-x86_64-minimal-docker"
 BOX_PATH = File.expand_path("~/.box/#{BOX_NAME}.box")
 
 if !FileTest.exists?("packer/builds")
